@@ -3369,7 +3369,7 @@ function buildList(){
         <div class="sbar-w"><div class="sbar ${d.risk_level}" style="width:${d.risk_score}%"></div></div>
       </div>
       <div class="ds">
-        <div class="snum ${d.risk_level}">${d.risk_score.toFixed(0)}</div>
+        <div class="snum ${d.risk_level}">${fmtScore(d.risk_score)}</div>
         <div class="slvl">${d.risk_level.toUpperCase()}</div>
       </div>
     </div>`).join('');
@@ -3664,7 +3664,7 @@ function buildDetailPanel(name){
       <div class="back-btn" onclick="backToOverview()">← Back</div>
       <div class="rp-name">${d.district}</div>
       <div style="margin-top:5px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
-        <span class="rbadge ${d.risk_level}">${d.risk_level.toUpperCase()} — ${d.risk_score.toFixed(0)}</span>
+        <span class="rbadge ${d.risk_level}">${d.risk_level.toUpperCase()} — ${fmtScore(d.risk_score)}</span>
         <span style="font-size:10px;color:var(--text3)">${d.highland?'⛰ Highland':'🌾 Lowland'}</span>
       </div>
       <div class="rp-sub">${d.u5_population.toLocaleString()} children U5 · ${d.communities.length} communities</div>
@@ -3909,7 +3909,7 @@ function renderAlerts(c){
                   ${d.highland?'<span style="margin-left:5px;font-size:10px;color:var(--text3)">⛰</span>':''}
                 </div>
                 <div style="text-align:right;">
-                  <div style="font-size:22px;font-weight:700;font-family:var(--mono);color:${col};line-height:1">${d.risk_score.toFixed(0)}</div>
+                  <div style="font-size:22px;font-weight:700;font-family:var(--mono);color:${col};line-height:1">${fmtScore(d.risk_score)}</div>
                   <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">Dec 2024 data</div>
                 </div>
               </div>
@@ -3944,7 +3944,7 @@ function renderAlerts(c){
                 <span style="font-size:12px;font-weight:600;color:var(--navy)">${d.district}</span>
                 <span style="font-size:12px;font-weight:700;font-family:var(--mono);color:${col}">${total}</span>
               </div>
-              <div style="font-size:10px;color:var(--text3)">Risk: <span style="color:${C(d.risk_level)};font-weight:600">${d.risk_level}</span> (${d.risk_score.toFixed(0)})</div>
+              <div style="font-size:10px;color:var(--text3)">Risk: <span style="color:${C(d.risk_level)};font-weight:600">${d.risk_level}</span> (${fmtScore(d.risk_score)})</div>
             </div>`;}).join('')}
           <div style="font-size:10px;color:var(--text3);padding:8px;background:var(--bg);border-radius:5px;border:1px solid var(--bd);margin-top:5px;line-height:1.55;">⚡ <strong style="color:var(--navy)">Roadmap:</strong> Live OpenWeatherMap 14-day feed through trained CARE-AI model. Alert JSON auto-generated per district.</div>
         </div>
@@ -3978,7 +3978,9 @@ async function init() {
 // (CARES_CONFIG.levelSource = 'data'). Set levelSource:'score' in config.js to re-derive them from the score bands instead.
 // Score bands (used only for the consistency check / 'score' mode): High >=70, Medium 45-69, Low <45.
 let LEVEL_MISMATCHES = 0;
-function levelFromScore(s){ const r=Math.round(Number(s)); return r>=70?'High':r>=45?'Medium':'Low'; }
+function levelFromScore(s){ s=Number(s); return s>=70?'High':s>=45?'Medium':'Low'; }
+// Whole number for display, but show one decimal when rounding would cross a band edge (e.g. 69.7 must not read as '70' while Medium)
+function fmtScore(v){ v=Number(v); const r=Math.round(v); return levelFromScore(r)!==levelFromScore(v)?v.toFixed(1):String(r); }
 function cleanLevel(l,score){
   const s=String(l||'').trim().toLowerCase();
   if(s==='high'||s==='medium'||s==='low') return s[0].toUpperCase()+s.slice(1);
@@ -4062,7 +4064,7 @@ function openBottomSheet(name) {
         <div>
           <div style="font-size:18px;font-weight:700;color:var(--navy)">${d.district}</div>
           <div style="margin-top:5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-            <span class="rbadge ${d.risk_level}">${d.risk_level.toUpperCase()} — ${d.risk_score.toFixed(0)}</span>
+            <span class="rbadge ${d.risk_level}">${d.risk_level.toUpperCase()} — ${fmtScore(d.risk_score)}</span>
             <span style="font-size:10px;color:var(--text3)">${d.highland ? '⛰ Highland' : '🌾 Lowland'}</span>
           </div>
           <div style="font-size:11px;color:var(--text3);margin-top:4px;">${d.u5_population.toLocaleString()} children U5 · ${d.communities.length} communities</div>
