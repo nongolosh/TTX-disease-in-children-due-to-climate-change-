@@ -3973,8 +3973,26 @@ async function init() {
   }
 }
 
+// Single source of truth for risk bands (must match the map legend: High >=70, Medium 45-69, Low <45).
+// Uses the rounded score so the label always agrees with the number shown on screen.
+function levelFromScore(s){ const r=Math.round(Number(s)); return r>=70?'High':r>=45?'Medium':'Low'; }
+function normaliseLevels(data){
+  const diffs=[];
+  Object.entries(data.districts||{}).forEach(([dn,d])=>{
+    d.risk_score=Number(d.risk_score);
+    const lv=levelFromScore(d.risk_score);
+    if(d.risk_level!==lv){ diffs.push(`${dn}: file said ${d.risk_level}, score ${d.risk_score} => ${lv}`); d.model_risk_level=d.risk_level; d.risk_level=lv; }
+    (d.communities||[]).forEach(c=>{
+      c.risk_score=Number(c.risk_score);
+      const cl=levelFromScore(c.risk_score);
+      if(c.risk_level!==cl){ diffs.push(`${dn} / ${c.name}: file said ${c.risk_level}, score ${c.risk_score} => ${cl}`); c.model_risk_level=c.risk_level; c.risk_level=cl; }
+    });
+  });
+  if(diffs.length) console.warn(`Risk level did not match score thresholds in ${diffs.length} record(s); relabelled from score:\n`+diffs.join('\n'));
+  return data;
+}
 function buildDashboard(data) {
-  CD = data;
+  CD = normaliseLevels(data);
   render();
   fetchAllWx();
 }
