@@ -2,7 +2,7 @@
 
 **CARES: Climate Anticipatory Risk and Early Warning System**
 
-TitaniumX Group | Mohloli Innovation Hub
+TitaniumX Group | Mohloli Digital and Innovation Hub
 
 Children across Lesotho face a growing convergence of climate sensitive health threats, including diarrhoeal disease, acute respiratory infections, hypothermia, and severe acute malnutrition. These risks are shaped not only by poverty and access to services, but also by climate variability and environmental vulnerability. Rainfall anomalies, drought conditions, temperature drops, flooding, and snow related road disruption can all affect whether vulnerable children receive timely care and essential services. Yet very few climate and health platforms have been designed from within Lesotho to anticipate these risks before they escalate.
 
